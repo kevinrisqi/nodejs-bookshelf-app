@@ -33,6 +33,24 @@ const addBookHandler = (request, h) => {
         updatedAt,
     };
 
+    if (name === undefined || name === '') {
+        const response = h.response({
+            status: 'fail',
+            message: 'Gagal menambahkan buku. Mohon isi nama buku',
+        });
+        response.code(500);
+        return response;
+    }
+
+    if (readPage > pageCount) {
+        const response = h.response({
+            status: 'fail',
+            message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+        });
+        response.code(400);
+        return response;
+    }
+
     books.push(newBook);
 
     const isSuccess = books.filter((book) => book.id === id).length > 0;
@@ -40,7 +58,7 @@ const addBookHandler = (request, h) => {
     if (isSuccess) {
         const response = h.response({
             status: 'success',
-            message: 'Data buku berhasil ditambahkan!',
+            message: 'Buku berhasil ditambahkan',
             data: {
                 bookId: id,
             },
@@ -53,7 +71,7 @@ const addBookHandler = (request, h) => {
 
     const response = h.response({
         status: 'fail',
-        message: 'Gagal menambahkan buku. Mohon isi nama buku',
+        message: 'Buku gagal ditambahkan',
     });
     response.code(500);
     return response;
@@ -66,4 +84,28 @@ const getAllBookHandler = () => ({
     },
 });
 
-module.exports = { addBookHandler, getAllBookHandler };
+const getBookByIdHandler = (request, h) => {
+    const { bookId } = request.params;
+
+    const book = books.filter((b) => b.id === bookId)[0];
+
+    if (book !== undefined) {
+        const response = h.response({
+            status: 'success',
+            data: {
+                book,
+            },
+        });
+        response.code(200);
+        return response;
+    }
+
+    const response = h.response({
+        status: 'fail',
+        message: 'Buku tidak ditemukan',
+    });
+    response.code(404);
+    return response;
+};
+
+module.exports = { addBookHandler, getAllBookHandler, getBookByIdHandler };
