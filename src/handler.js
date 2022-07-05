@@ -19,6 +19,7 @@ const addBookHandler = (request, h) => {
     const finished = pageCount === readPage;
 
     const newBook = {
+        ...request.payload,
         id,
         name,
         year,
@@ -77,15 +78,41 @@ const addBookHandler = (request, h) => {
     return response;
 };
 
-const getAllBookHandler = () => ({
-    status: 'success',
-    data: {
-        books,
-    },
-});
+const getAllBookHandler = (request, h) => {
+    const { name, reading, finished } = request.query;
+
+    let filteredBooks = books;
+
+    if (name !== undefined) {
+        filteredBooks = filteredBooks.filter((book) => book
+            .name.toLowerCase().includes(name.toLowerCase()));
+    }
+
+    if (reading !== undefined) {
+        filteredBooks = filteredBooks.filter((book) => book.reading === !!Number(reading));
+    }
+
+    if (finished !== undefined) {
+        filteredBooks = filteredBooks.filter((book) => book.finished === !!Number(finished));
+    }
+
+    const response = h.response({
+        status: 'success',
+        data: {
+            books: filteredBooks.map((book) => ({
+                id: book.id,
+                name: book.name,
+                publisher: book.publisher,
+            })),
+        },
+    });
+    response.code(200);
+
+    return response;
+};
 
 const getBookByIdHandler = (request, h) => {
-    const { bookId } = request.params;
+    const { bookId } = request.query;
 
     const book = books.filter((b) => b.id === bookId)[0];
 
@@ -197,10 +224,17 @@ const deleteBookByIdHandler = (request, h) => {
     return response;
 };
 
+// const getBookByReadingHandler = (request, h) => {
+//     const reading = request.query;
+
+//     return reading;
+// };
+
 module.exports = {
     addBookHandler,
     getAllBookHandler,
     getBookByIdHandler,
     editBookByIDHandler,
     deleteBookByIdHandler,
+    // getBookByReadingHandler,
 };
