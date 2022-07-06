@@ -12,6 +12,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
-        "indent": "off"
+        "indent": "off",
+        "linebreak-style": "off"
     }
 }

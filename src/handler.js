@@ -39,7 +39,7 @@ const addBookHandler = (request, h) => {
             status: 'fail',
             message: 'Gagal menambahkan buku. Mohon isi nama buku',
         });
-        response.code(500);
+        response.code(400);
         return response;
     }
 
@@ -112,7 +112,7 @@ const getAllBookHandler = (request, h) => {
 };
 
 const getBookByIdHandler = (request, h) => {
-    const { bookId } = request.query;
+    const { bookId } = request.params;
 
     const book = books.filter((b) => b.id === bookId)[0];
 
@@ -224,17 +224,10 @@ const deleteBookByIdHandler = (request, h) => {
     return response;
 };
 
-// const getBookByReadingHandler = (request, h) => {
-//     const reading = request.query;
-
-//     return reading;
-// };
-
 module.exports = {
     addBookHandler,
     getAllBookHandler,
     getBookByIdHandler,
     editBookByIDHandler,
     deleteBookByIdHandler,
-    // getBookByReadingHandler,
 };
